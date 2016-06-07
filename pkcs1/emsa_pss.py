@@ -38,7 +38,7 @@ def encode(m, embits, hash_class=hashlib.sha1,
     h = hash_class(m_prime).digest()
     ps = '\x00' * (em_len - s_len - h_len - 2)
     db = ps + '\x01' + salt
-    db_mask = mgf(h, em_len - h_len - 1)
+    db_mask = mgf(h, em_len - h_len - 1, hash_class=hash_class)
     masked_db = primitives.string_xor(db, db_mask)
     octets, bits = (8 * em_len - embits) / 8, (8*em_len-embits) % 8
     # replace first `octets' bytes
@@ -83,7 +83,7 @@ def verify(m, em, embits, hash_class=hashlib.sha1, mgf=mgf.mgf1, s_len=None):
         if c != '\x00':
             return False
     # 7.
-    db_mask = mgf(h, em_len - h_len - 1)
+    db_mask = mgf(h, em_len - h_len - 1, hash_class=hash_class)
     # 8.
     db = primitives.string_xor(masked_db, db_mask)
     # 9.
